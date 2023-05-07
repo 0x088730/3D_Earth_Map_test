@@ -13,7 +13,6 @@ var mouseMove,
   isSwipe,
   tooltip,
   tooltipWaiting;
-
 init();
 animate();
 
@@ -22,7 +21,6 @@ function init() {
   Object.keys(files).forEach((key) => {
     files[key].forEach((name) => examples.push(name));
   });
-
   var tileRatio = 1000 / 800;
   turns =
     Math.PI / Math.sqrt((4 * Math.PI) / examples.length / tileRatio);
