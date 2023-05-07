@@ -243,7 +243,7 @@
         computeTileUVs(sphere, texSize, sphere.attributes.uv2, uvZoom2);
 
         material = new THREE.MeshBasicMaterial({ color: 0xa1a1a1 });
-        new THREE.TextureLoader().load(".assets/all_in_one.jpg", function (map) {
+        new THREE.TextureLoader().load("./assets/all_in_one.jpg", function (map) {
           material.color = null;
           material.map = map;
           material.needsUpdate = true;
