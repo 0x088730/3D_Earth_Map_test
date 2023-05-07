@@ -5,7 +5,7 @@
  import {
 	BufferGeometry,
 	Float32BufferAttribute
-} from "./three.module.js";
+} from "../three.module.js";
 
 var SpiralSphereGeometry = function ( radius, turns, gapX, gapY, tileX, tileY, tiles ) {
 

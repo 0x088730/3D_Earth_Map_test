@@ -1,7 +1,7 @@
 
 import * as THREE from "https://unpkg.com/three@0.138.3/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.138.3/examples/jsm/controls/OrbitControls.js";
-import { SpiralSphereGeometry } from "./SpiralSphereGeometry.js";
+import { SpiralSphereGeometry } from "./js/SpiralSphereGeometry.js";
 
 var canvas, camera, material, scene, renderer, controls;
 var sphere, outline, examples, radius, turns, zoomSpeed;
@@ -80,7 +80,7 @@ function init() {
   computeTileUVs(sphere, texSize, sphere.attributes.uv2, uvZoom2);
 
   material = new THREE.MeshBasicMaterial({ color: 0xa1a1a1 });
-  new THREE.TextureLoader().load("./all_in_one.jpg", function (map) {
+  new THREE.TextureLoader().load("./assets/all_in_one.jpg", function (map) {
     material.color = null;
     material.map = map;
     material.needsUpdate = true;
