@@ -1,0 +1,509 @@
+<!--
+	@author munrocket / https://twitter.com/munrocket_twit
+	Uses modified formulas from paper by Marco Abrate and Fabrizio Pollastri
+	Inspired by Callum Prentice page thumbnails
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <!-- Mirrored from rawcdn.githack.com/munrocket/three.js/734d1a3acfb65377788cca8c53d12d8ae921e438/examples/index_searchball.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 03 Jul 2022 17:12:46 GMT -->
+  <!-- Added by HTTrack --><meta
+    http-equiv="content-type"
+    content="text/html;charset=utf-8"
+  /><!-- /Added by HTTrack -->
+  <head>
+    <title>3D Mapping Project</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link type="text/css" rel="stylesheet" href="main.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Oswald&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        background-color: #fff;
+      }
+      @font-face {
+        font-family: "Roboto Mono";
+        src: local("Roboto Mono"), local("RobotoMono-Regular"),
+          url("../files/RobotoMono-Regular.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 400;
+      }
+      #tooltip {
+        position: fixed;
+        display: none;
+        padding: 0px 10px 2px 10px;
+        border-radius: 16px;
+        background-color: #049ef4;
+        color: #fff;
+        font-family: "Roboto Mono", monospace;
+        font-size: 14px;
+        text-align: center;
+        pointer-events: none;
+        z-index: 5;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="overlay">
+      <div class="overlayDoor"></div>
+      <div class="overlayContent">
+        <!-- <div class="loader"> -->
+        <div class="progress-container" data-percentage="80">
+          <div class="progress"></div>
+          <!-- <div class="percentage">0%</div> -->
+        </div>
+        <div class="logo">
+          <!-- <img src="./logo.png" alt=""> -->
+          <svg
+            width="231"
+            height="148"
+            viewBox="0 0 231 148"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+          >
+            <rect width="231" height="148" fill="url(#pattern0)" />
+            <defs>
+              <pattern
+                id="pattern0"
+                patternContentUnits="objectBoundingBox"
+                width="1"
+                height="1"
+              >
+                <use
+                  xlink:href="#image0_18_882"
+                  transform="scale(0.00281006 0.00438596)"
+                />
+              </pattern>
+              <image
+                id="image0_18_882"
+                width="356"
+                height="228"
+                xlink:href="data:image/png;base64,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"
+              />
+            </defs>
+          </svg>
+          <div class="aesthetics" style="font-family: 'Oswald', sans-serif;">
+            Where Aesthetics, Logic and Time-saving Co-exists 
+          </div>
+          <br />
+          <div class="digital_product" style="font-family: 'Roboto', sans-serif;">
+            Digital product agency with a human-touch <br>
+            Specialises in UX/UI and Visual Design
+          </div>
+
+        </div>
+        <!-- </div> -->
+        <!-- <div class="skip">SKIP</div> -->
+      </div>
+    </div>
+    <div class="overlay_page">
+      <div class="overlay_Content">
+        <div class="digital_One_product" style="font-family: Oswald; font-size: 2.934vw; margin-top: 7.395833333333286vh">
+          An animation that depicts a digital product agency with human touch <br>OR<br> 
+          An animation that depicts Aesthetics, Logic and Tech Co-exists 
+        </div>
+        <div class="grap_control">
+          <div>
+            <div class="digital_one_product" style="font-family: Oswald; font-size: 1.676vw">
+              1. Display a close eye in the loading screen (previous screen). Once the screen is loaded, the eye opens &nbsp;&nbsp;&nbsp;and then zoom in on the eye, then it displays the big ball with the portfolio work (replace the next 2 &nbsp;&nbsp;&nbsp;screens).
+            </div>
+            <br>
+            <br>
+            <br>
+            <div class="digital_one_product" style="font-family: Oswald; font-size: 1.676vw">
+              2. A robot hand is touching a human hand. Something similar to this but automated instead the user &nbsp;&nbsp;&nbsp;needs to manually scroll: https://onix.design/
+            </div>
+            <br>
+            <br>
+            <br>
+            <div class="digital_one_product" style="font-family: Oswald; font-size: 1.676vw">
+              OR some other ideas... 
+            </div>
+          </div>
+          <div style="margin-left: 1.676vw;">
+            <img src="./image 32.png" alt="" style="width: 20.662vw; margin-top: -4.16666666666664vh;">
+            <img src="./image 31.jpg" alt="" style="width: 350px; margin-top: 4.16666666666664vh;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="logo_top">
+        <img src="./logo.png" alt="" style="width: 9.681vw; height: 7.7083333333332vh">
+    </div>
+    <div class="copy_right" style="font-family: Roboto, sans-serif;">
+      info@altcreative.com.au  |    © ALT Creative. All rights reserved.
+    </div>
+    <div class="into_nav">
+      <span class="goto_intro" style="font-family: 'Roboto', sans-serif;">About Us</span>
+      <span class="goto_intro" style="font-family: 'Roboto', sans-serif;">Contact</span>
+    </div>
+    <!-- <div>
+      hefsadfsdafs
+    </div> -->
+
+    <div class="contentOther">
+      <div id="tooltip"></div>
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <script src="files.js"></script>
+    <script
+      async
+      src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"
+    ></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.138.3/build/three.module.js"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import * as THREE from "three";
+      import { OrbitControls } from "https://unpkg.com/three@0.138.3/examples/jsm/controls/OrbitControls.js";
+      import { SpiralSphereGeometry } from "./SpiralSphereGeometry.js";
+
+      var canvas, camera, material, scene, renderer, controls;
+      var sphere, outline, examples, radius, turns, zoomSpeed;
+      var mouseMove,
+        mouseMove0,
+        mouseDown,
+        idMove,
+        idDown,
+        isSwipe,
+        tooltip,
+        tooltipWaiting;
+
+      init();
+      animate();
+
+      function init() {
+        examples = [];
+        Object.keys(files).forEach((key) => {
+          files[key].forEach((name) => examples.push(name));
+        });
+
+        var tileRatio = 1000 / 800;
+        turns =
+          Math.PI / Math.sqrt((4 * Math.PI) / examples.length / tileRatio);
+        radius = 1;
+        var gap = 0.01;
+        var subGrid = 20;
+
+        var texSize = Math.ceil(Math.sqrt(examples.length));
+        var uvZoom = 0.01;
+        var uvZoom2 = 0.065;
+        zoomSpeed = 0.25;
+
+        mouseMove = new THREE.Vector2();
+        mouseMove0 = new THREE.Vector2();
+        mouseDown = new THREE.Vector2();
+        tooltip = document.getElementById("tooltip");
+
+        // scene
+
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color("black");
+
+        camera = new THREE.PerspectiveCamera(
+          70,
+          window.innerWidth / window.innerHeight,
+          0.01,
+          10
+        );
+        camera.position.set(5, 1.5, 1);
+        camera.matrixWorldNeedsUpdate = true;
+        if (camera.aspect < 1) {
+          var pos = camera.position.divideScalar(camera.aspect);
+          camera.position.set(pos.x, pos.y, pos.z);
+        }
+
+        sphere = new SpiralSphereGeometry(
+          radius,
+          turns,
+          gap,
+          gap,
+          subGrid,
+          subGrid,
+          examples.length
+        );
+        sphere.setAttribute(
+          "zoom",
+          new THREE.BufferAttribute(
+            new Float32Array(sphere.attributes.id.count),
+            1
+          )
+        );
+        sphere.setAttribute("uv2", sphere.attributes.uv.clone());
+        sphere.computeVertexNormals();
+        computeTileUVs(sphere, texSize, sphere.attributes.uv, uvZoom);
+        computeTileUVs(sphere, texSize, sphere.attributes.uv2, uvZoom2);
+
+        material = new THREE.MeshBasicMaterial({ color: 0xa1a1a1 });
+        new THREE.TextureLoader().load("./all_in_one.jpg", function (map) {
+          material.color = null;
+          material.map = map;
+          material.needsUpdate = true;
+        });
+        const loader = new THREE.TextureLoader();
+        loader.load("./galaxy_starfield.png", function (texture) {
+          scene.background = texture;
+        });
+        material.onBeforeCompile = function (shader) {
+          shader.vertexShader = [
+            "attribute float zoom;",
+            "attribute vec2 uv2;",
+            shader.vertexShader,
+          ].join("\n");
+          shader.vertexShader = shader.vertexShader.replace(
+            "#include <uv_vertex>",
+            ["#ifdef USE_UV", "  vUv = mix( uv, uv2, zoom );", "#endif"].join(
+              "\n"
+            )
+          );
+        };
+
+        scene.add(new THREE.Mesh(sphere, material));
+        scene.add(outline);
+
+        var thikness = 0.12 * gap * Math.sqrt(window.devicePixelRatio || 1);
+        var geometry = new THREE.RingBufferGeometry(
+          1 + thikness,
+          1 + 2 * thikness,
+          100
+        );
+        var matLine = new THREE.MeshBasicMaterial({ color: 0x049ef4 });
+        outline = new THREE.Mesh(geometry, matLine);
+
+        // renderer
+
+        canvas = document.getElementById("canvas");
+        renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // controls
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.04;
+        controls.screenSpacePanning = false;
+        controls.enablePan = false;
+        controls.minDistance = 1.05;
+        controls.maxDistance = 10;
+
+        // events
+
+        window.addEventListener("resize", onWindowResize, false);
+        canvas.addEventListener("mousedown", onMouseDown, false);
+        canvas.addEventListener("mousemove", onMouseMove, false);
+        canvas.addEventListener("mouseup", onMouseUp, false);
+        canvas.addEventListener("touchstart", onMouseDown, false);
+        canvas.addEventListener("touchmove", onMouseMove, false);
+        canvas.addEventListener("touchend", onMouseUp, false);
+      }
+
+      function computeTileUVs(sphere, texSize, aUv, uvZoom) {
+        for (var i = 0; i < sphere.attributes.id.count; i++) {
+          var id = sphere.attributes.id.array[i];
+          var j = Math.floor(id / texSize);
+          var q = (1 - 2 * uvZoom) / texSize;
+          var u0 = (id + uvZoom) / texSize - j;
+          var v0 = 1 - (j + 1 - uvZoom) / texSize;
+
+          aUv.array[2 * i] *= q;
+          aUv.array[2 * i] += u0;
+          aUv.array[2 * i + 1] *= q;
+          aUv.array[2 * i + 1] += v0;
+        }
+      }
+
+      function analyticRaycaster(mouse) {
+        var ray = new THREE.Ray();
+        ray.origin.setFromMatrixPosition(camera.matrixWorld);
+        var x = (2 * mouse.x) / window.innerWidth - 1;
+        var y = (-2 * mouse.y) / window.innerHeight + 1;
+        ray.direction
+          .set(x, y, 0.5)
+          .unproject(camera)
+          .sub(ray.origin)
+          .normalize();
+
+        var a = ray.direction.dot(ray.direction);
+        var b = 2 * ray.origin.dot(ray.direction);
+        var c = ray.origin.dot(ray.origin) - radius * radius;
+        var D = b * b - 4 * a * c;
+        if (D < 0) return -1;
+        var p = new THREE.Vector3();
+        var s = (-b - Math.sqrt(D)) / (2 * a);
+        ray.at(s, p);
+
+        p = new THREE.Spherical().setFromVector3(p);
+        p.phi = Math.PI / 2 - p.phi;
+        p.theta = (Math.PI / 2 - p.theta) % (2 * Math.PI);
+
+        var t =
+          p.theta / 2 / turns +
+          (Math.PI / turns) *
+            Math.floor(
+              (turns * (Math.PI - 2 * p.phi) - p.theta) / (2 * Math.PI)
+            ) -
+          Math.PI / 2;
+        return (
+          1 +
+          Math.floor(
+            ((examples.length - 2) *
+              (Math.cos(Math.PI / 2 / turns) -
+                Math.cos(t + ((turns + 1) * Math.PI) / 2 / turns))) /
+              (2 * Math.cos(Math.PI / 2 / turns))
+          )
+        );
+      }
+
+      function savePosition(mouse, e, touches) {
+        mouse.x = touches ? touches[0].pageX : e.clientX;
+        mouse.y = touches ? touches[0].pageY : e.clientY;
+      }
+
+      function onMouseDown(e) {
+        savePosition(mouseDown, e, e.changedTouches);
+        idMove = analyticRaycaster(mouseDown);
+        idDown = idMove;
+        isSwipe = false;
+      }
+
+      function onMouseMove(e) {
+        e.preventDefault();
+        savePosition(mouseMove, e, e.changedTouches);
+
+        idMove = analyticRaycaster(mouseMove);
+        canvas.style.cursor = idMove < 0 ? "auto" : "pointer";
+        var multitouch = e.touches && e.touches.length > 1;
+        isSwipe = mouseMove.distanceTo(mouseDown) > 4 || multitouch;
+
+        if (mouseMove0.distanceTo(mouseMove) > 4) {
+          tooltip.style.display = "none";
+          clearTimeout(tooltipWaiting);
+          tooltipWaiting = null;
+        }
+        if (!tooltipWaiting) {
+          tooltipWaiting = setTimeout(function () {
+            if (idMove >= 0) {
+              tooltip.innerHTML = examples[idMove];
+              tooltip.style.display = "block";
+              var dy = e.touches
+                ? -2 * tooltip.clientHeight
+                : tooltip.clientHeight;
+              tooltip.style.left =
+                mouseMove.x - (tooltip.clientWidth - 10) / 2 + "px";
+              tooltip.style.top = mouseMove.y + dy + "px";
+            }
+            tooltipWaiting = null;
+          }, 500);
+        }
+        mouseMove0.copy(mouseMove);
+      }
+
+      function onMouseUp(e) {
+        savePosition(mouseMove, e, e.changedTouches);
+        var modal = document.getElementById("myModal");
+        var modalImg = document.getElementById("img01");
+        if (idMove >= 0 && !isSwipe) {
+          // window.location.href = './' + examples[ idMove ] + '.html';
+          //   alert(examples[idMove]);
+          modal.style.display = "block";
+          modalImg.src = this.src;
+          // idMove.onclick = function () {
+          //     modal.style.display = "block";
+          //     // modalImg.src = this.src;
+          //   };
+        }
+        var span = document.getElementsByClassName("close")[0];
+        span.onclick = function () {
+          modal.style.display = "none";
+        };
+        tooltip.style.display = "none";
+        clearTimeout(tooltipWaiting);
+        tooltipWaiting = null;
+      }
+
+      function onWindowResize() {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      }
+
+      function animate(now) {
+        controls.update();
+        controls.rotateSpeed = 0.4 * (camera.position.length() - 0.4);
+
+        var k = 1 / Math.sqrt(1 - 1 / camera.position.lengthSq());
+        outline.scale.copy(new THREE.Vector3(k, k, 1));
+        outline.lookAt(camera.position);
+
+        for (var i = 0, attr = sphere.attributes; i < attr.id.count; i++) {
+          var dz = idMove === attr.id.array[i] ? zoomSpeed : -zoomSpeed;
+          attr.zoom.array[i] = Math.max(
+            0,
+            Math.min(1, attr.zoom.array[i] + dz)
+          );
+          attr.zoom.needsUpdate = true;
+        }
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+    </script>
+
+    <script>
+      $(document).ready(function () {
+        // Users can skip the loading process if they want.        // Will wait for everything on the page to load.
+        $(window).bind("load", function () {
+          setTimeout(function () {
+            $(".overlay").css({ display: "none" });
+            setTimeout(function () {
+              $(".overlay_page").css({ display: "none" });
+            }, 6000);
+          }, 2000);
+        });
+
+        // Will remove overlay after 1min for users cannnot load properly.
+      });
+      const progressContainer = document.querySelector(".progress-container");
+
+      // initial call
+      setPercentage();
+
+      function setPercentage() {
+        const percentage =
+          progressContainer.getAttribute("data-percentage") + "%";
+
+        const progressEl = progressContainer.querySelector(".progress");
+        const percentageEl = progressContainer.querySelector(".percentage");
+
+        progressEl.style.width = percentage;
+        percentageEl.innerText = percentage;
+        percentageEl.style.left = percentage;
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <div id="myModal" class="modal">
+      <span class="close">&times;</span>
+      <img class="modal-content" id="img01" />
+      <div id="caption"></div>
+    </div>
+  </body>
+
+  <!-- Mirrored from rawcdn.githack.com/munrocket/three.js/734d1a3acfb65377788cca8c53d12d8ae921e438/examples/index_searchball.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 03 Jul 2022 17:12:48 GMT -->
+</html>
