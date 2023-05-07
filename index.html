@@ -367,7 +367,6 @@
           aUv.array[2 * i + 1] += v0
         }
       }
-
       function analyticRaycaster(mouse) {
         var ray = new THREE.Ray()
         ray.origin.setFromMatrixPosition(camera.matrixWorld)
@@ -378,7 +377,6 @@
           .unproject(camera)
           .sub(ray.origin)
           .normalize()
-
         var a = ray.direction.dot(ray.direction)
         var b = 2 * ray.origin.dot(ray.direction)
         var c = ray.origin.dot(ray.origin) - radius * radius
@@ -387,11 +385,9 @@
         var p = new THREE.Vector3()
         var s = (-b - Math.sqrt(D)) / (2 * a)
         ray.at(s, p)
-
         p = new THREE.Spherical().setFromVector3(p)
         p.phi = Math.PI / 2 - p.phi
         p.theta = (Math.PI / 2 - p.theta) % (2 * Math.PI)
-
         var t =
           p.theta / 2 / turns +
           (Math.PI / turns) *
@@ -409,28 +405,23 @@
           )
         )
       }
-
       function savePosition(mouse, e, touches) {
         mouse.x = touches ? touches[0].pageX : e.clientX
         mouse.y = touches ? touches[0].pageY : e.clientY
       }
-
       function onMouseDown(e) {
         savePosition(mouseDown, e, e.changedTouches)
         idMove = analyticRaycaster(mouseDown)
         idDown = idMove
         isSwipe = false
       }
-
       function onMouseMove(e) {
         e.preventDefault()
         savePosition(mouseMove, e, e.changedTouches)
-
         idMove = analyticRaycaster(mouseMove)
         canvas.style.cursor = idMove < 0 ? 'auto' : 'pointer'
         var multitouch = e.touches && e.touches.length > 1
         isSwipe = mouseMove.distanceTo(mouseDown) > 4 || multitouch
-
         if (mouseMove0.distanceTo(mouseMove) > 4) {
           tooltip.style.display = 'none'
           clearTimeout(tooltipWaiting)
@@ -453,7 +444,6 @@
         }
         mouseMove0.copy(mouseMove)
       }
-
       function onMouseUp(e) {
         savePosition(mouseMove, e, e.changedTouches)
         var modal = document.getElementById('myModal')
@@ -470,13 +460,11 @@
         clearTimeout(tooltipWaiting)
         tooltipWaiting = null
       }
-
       function onWindowResize() {
         renderer.setSize(window.innerWidth, window.innerHeight)
         camera.aspect = window.innerWidth / window.innerHeight
         camera.updateProjectionMatrix()
       }
-
       function animate(now) {
         controls.update()
         controls.rotateSpeed = 0.4 * (camera.position.length() - 0.4)
@@ -495,7 +483,6 @@
         requestAnimationFrame(animate)
       }
     </script>
-
     <script>
       $(document).ready(function () {
         $(window).bind('load', function () {
