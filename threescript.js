@@ -1,7 +1,7 @@
 
 import * as THREE from "https://unpkg.com/three@0.138.3/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.138.3/examples/jsm/controls/OrbitControls.js";
-import { SpiralSphereGeometry } from "./js/SpiralSphereGeometry.js";
+import { SpiralSphereGeometry } from "./SpiralSphereGeometry.js";
 
 var canvas, camera, material, scene, renderer, controls;
 var sphere, outline, examples, radius, turns, zoomSpeed;
